@@ -9,6 +9,27 @@ Question: can a federated forecaster with light per-household personalization be
 
 Run `python analysis.py`; it writes `results.json` and `figures/nmae.png`.
 
+## Results (latest run)
+
+On 60 UCI Electricity 2011-2014 clients, a standard FedAvg MLP forecaster reached 0.120 mean per-household NMAE for next-hour load over the last 4 weeks, versus 0.115 with a local ridge correction: a small gain that improved 68% of households.
+
+| Metric | Value |
+|---|---|
+| baseline_score | 0.1199 |
+| improved_score | 0.1154 |
+| improvement | 0.004528 |
+| baseline_score_std | 0.001377 |
+| improved_score_std | 0.0008328 |
+| baseline_worst10_nmae | 0.4491 |
+| improved_worst10_nmae | 0.4379 |
+| centralized_nmae | 0.1 |
+| centralized_nmae_std | 0.003164 |
+| frac_households_improved | 0.6778 |
+
+Run on 2026-10-11. Full output: [results.json](results.json) · [run.log](run.log)
+
+Notes: n_rows is the number of raw 15-min rows in the file; n_train/n_test are the hourly samples of the 60 selected clients (training uses each client's last 52 weeks before the test period). Clients were chosen at random among those with almost no zero readings in the training window (training data only), so results do not cover late-starting clients. The ridge is fitted on in-sample global predictions of the local training data. One-step-ahead test features use actual past values. Single client subset and single time split; seeds vary only MLP init/shuffling. Centralized MLP uses the same number of epochs as FedAvg rounds x local epochs.
+
 ## Reference
 
 This project is motivated by the following paper:
