@@ -1,0 +1,30 @@
+{
+  "question": "Can a federated forecaster with light per-household personalization beat a plain FedAvg neural forecaster on next-hour load across households with very different consumption patterns?",
+  "method": "60 UCI electricity clients, hourly, scaled by own training mean; lag features (24 h, same hour last week, hour/day-of-week); last 4 weeks test; FedAvg MLPRegressor vs same global model + local ridge correction; 3 seeds.",
+  "dataset": {
+    "name": "UCI Electricity Load Diagrams 2011-2014 (60 clients, hourly)",
+    "source_url": "https://archive.ics.uci.edu/static/public/321/electricityloaddiagrams20112014.zip",
+    "n_rows": 140256,
+    "n_train": 524160,
+    "n_test": 40320,
+    "same_as_paper": false,
+    "baseline_is_papers_method": false
+  },
+  "metric_name": "mean per-household NMAE (sum|err|/sum|y|) on last 4 weeks, next-hour",
+  "higher_is_better": false,
+  "baseline": "Standard FedAvg of scikit-learn MLPRegressor (64 hidden units), fixed rounds, sample-weighted averaging; stand-in for the paper's unstated model.",
+  "improved": "Same FedAvg global model and rounds, plus per-household RidgeCV on [global prediction, lag-24h, lag-168h] fitted on local training data only.",
+  "metrics": {
+    "baseline_score": 0.11993194896057972,
+    "improved_score": 0.11540418358514015,
+    "improvement": 0.004527765375439571,
+    "baseline_score_std": 0.0013765493264453386,
+    "improved_score_std": 0.0008327737061456313,
+    "baseline_worst10_nmae": 0.44912148969176574,
+    "improved_worst10_nmae": 0.437891836302358,
+    "centralized_nmae": 0.10004288846896288,
+    "centralized_nmae_std": 0.0031642669872817063,
+    "frac_households_improved": 0.6777777777777777
+  },
+  "notes": "n_rows is the number of raw 15-min rows in the file; n_train/n_test are the hourly samples of the 60 selected clients (training uses each client's last 52 weeks before the test period). Clients were chosen at random among those with almost no zero readings in the training window (training data only), so results do not cover late-starting clients. The ridge is fitted on in-sample global predictions of the local training data. One-step-ahead test features use actual past values. Single client subset and single time split; seeds vary only MLP init/shuffling. Centralized MLP uses the same number of epochs as FedAvg rounds x local epochs."
+}
