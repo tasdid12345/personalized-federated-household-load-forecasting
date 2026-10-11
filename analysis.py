@@ -67,7 +67,7 @@ log(f"{N_CLIENTS} clients, train samples {n_train}, test samples {n_test}")
 
 # ---------- models ----------
 def new_mlp(seed):
-    return MLPRegressor((64,), batch_size=256, learning_rate_init=1e-3, random_state=seed)
+    return MLPRegressor(hidden_layer_sizes=(64,), batch_size=256, learning_rate_init=1e-3, random_state=seed)
 
 
 def local_model(g, X, y, seed):
